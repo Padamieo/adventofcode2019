@@ -21,16 +21,32 @@ function processData(input) {
 }
 
 function processGridRange(data) {
+	var vertical = [];
+	var hortizontal = [];
 	for(var i = 0; i < data.length; i++) {
 		var directionsVertical = (data[i].filter(x => (x.direction === 'U' || x.direction === 'D')));
-		var b = calculateRanges(directionsVertical, 'U');
-		console.log(b);
+		var verticalRange = calculateRanges(directionsVertical, 'U');
+		vertical.push(verticalRange);
 
 		var directionsHorizontal = (data[i].filter(x => (x.direction === 'L' || x.direction === 'R')));
-		var d = calculateRanges(directionsHorizontal, 'R');
-		console.log(d);
-
+		var horizontalRange = calculateRanges(directionsHorizontal, 'R');
+		hortizontal.push(horizontalRange);
 	}
+	var vRange = minMax(vertical.flat());
+	var hRange = minMax(hortizontal.flat());
+	var n = {
+		height: (vRange[0] < 0 ? vRange[0]*-1 : vRange[0]) + vRange[1],
+		heightShift: (vRange[0] < 0 ? vRange[0]*-1 : vRange[0]), 
+		width: (hRange[0] < 0 ? hRange[0]*-1 : hRange[0]) + hRange[1],
+		widthShift: (hRange[0] < 0 ? hRange[0]*-1 : hRange[0]),
+	}
+	console.log(n, vRange);
+	return n;
+
+}
+
+function minMax(input) {
+	return [Math.min(...input), Math.max(...input)];
 }
 
 function calculateRanges(directionsVertical, postive) {
@@ -44,9 +60,5 @@ function calculateRanges(directionsVertical, postive) {
 		}
 		outcomes.push(outcome);
 	});
-
-	var minX = (Math.min(...outcomes));
-	var maxX = (Math.max(...outcomes));
-
-	return [minX, maxX];
+	return minMax(outcomes);
 }
